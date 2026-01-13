@@ -357,9 +357,9 @@ function Dashboard() {
     },
     {
       id: 8,
-      name: "ENROLLMENT",
+      name: "BVN MODIFICATION",
       icon: NIMC,
-      to: "/dashboard/enrollment",
+      to: "/dashboard/bvn-modification",
     },
     {
       id: 9,
@@ -446,10 +446,10 @@ function Dashboard() {
 
   return (
     <div className="max-w-[1500px] mx-auto">
-      <div className="mb-10 text-2xl text-gray-500 font-bold">
+      <div className="-mt-5 md:mt-0 mb-5 md:mb-10 text-2xl text-gray-500 font-bold">
         {isReturning
           ? `Welcome back, ${firstName} 🙂`
-          : `Welcome to AY Creative Technologies, ${firstName} 👋`}
+          : `Welcome to Fylder, ${firstName} 👋`}
       </div>
       <div className="flex justify-center  max-w-full flex-col md:flex-row  gap-10">
         <div className="flex-1/2 rounded-lg bg-white hover:shadow-lg shadow-md ring-2 ring-sky-50/2 w-full p-7">
@@ -473,27 +473,27 @@ function Dashboard() {
               </button>
             </p>
 
-            <div className="flex flex-col items-center md:justify-start sm:flex-row gap-3">
+            <div className="flex flex-row items-center justify-center md:justify-start sm:flex-row gap-2">
               <button
                 onClick={() => setIsDepositModalOpen(true)}
                 disabled={!account || loadingAccount}
-                className="w-[160px] h-[40px] text-white bg-sky-400 cursor-pointer hover:bg-sky-500 rounded-lg p-2 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                className="w-[120px] md:w-[160px] h-[40px] text-white text-sm md:text-lg bg-sky-400 cursor-pointer hover:bg-sky-500 rounded-lg p-2 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 title={!account ? "Create a wallet first" : "Fund your wallet"}
               >
-                <CiWallet className="text-xl" />
+                {/* <CiWallet className="text-xl none md:block text-white" /> */}
                 <span>Card Payment</span>
               </button>
               {account?.accountNumber ? (
                 <button
                   onClick={openModal}
-                  className="w-[160px] h-[40px] text-white bg-purple-500 cursor-pointer hover:bg-purple-600 rounded-lg p-2 flex items-center justify-center gap-2"
+                  className="w-[120px] md:w-[160px] h-[40px] text-sm md:text-lg text-white bg-purple-500 cursor-pointer hover:bg-purple-600 rounded-lg p-2 flex items-center justify-center gap-2"
                 >
                   View Account
                 </button>
               ) : (
                 <button
                   onClick={handleCreateWallet}
-                  className="w-[160px] h-[40px] text-white bg-green-500 cursor-pointer hover:bg-green-600 rounded-lg p-2 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
+                  className="w-[120px] md:w-[160px] h-[40px] text-white text-sm md:text-lg bg-green-500 cursor-pointer hover:bg-green-600 rounded-lg p-2 flex items-center justify-center gap-2 disabled:bg-gray-400 disabled:cursor-not-allowed"
                 >
                   {creatingAccount ? "Creating..." : "Wallet Creation"}
                 </button>
@@ -634,9 +634,7 @@ function Dashboard() {
               alt={item.name}
               className="w-16 h-16 object-contain mb-3"
             />
-            <span className="font-semibold text-[14px] text-gray-400">
-              {item.name}
-            </span>
+            <span className=" text-[14px] text-gray-400">{item.name}</span>
           </NavLink>
         ))}
       </div>

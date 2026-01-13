@@ -40,7 +40,7 @@ import APIUsage from "../pages/History/API-Usage";
 import ValidationHistory from "../pages/History/ValidationHistory";
 import PersonalisationHistory from "../pages/History/PersonalisationHistory";
 import DemoHistory from "../pages/History/DemoHistory";
-import BVNModification from "../pages/BVN-Modification";
+import BVNModification from "../pages/BVNModification";
 import BVNModificationHistory from "../pages/History/BVNModificationHistory";
 
 function RoutesConfig() {
