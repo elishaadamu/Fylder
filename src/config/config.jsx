@@ -42,5 +42,6 @@ export const config = {
     deletePlan: "/data-plan/",
     updatePlan: "/data-plan/",
     VTUTransactionHistory: "/vtu/transactions/",
+    BasicNINVerification: "/verify/preambly/nin",
   },
 };

@@ -2,7 +2,7 @@
 import React, { useState } from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import { motion } from "framer-motion";
-import Logo from "../assets/images/logo.png";
+import Logo from "../assets/images/Logo.png";
 import Svg from "../assets/images/bg.svg";
 import axios from "axios";
 import { ToastContainer, toast } from "react-toastify";

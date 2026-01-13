@@ -9,7 +9,7 @@ import {
 import { useNavigate, NavLink, useLocation } from "react-router-dom";
 import Sidebar from "./Components/Sidebar";
 import "./assets/css/style.css";
-import Logo from "../assets/images/logo.png";
+import Logo from "../assets/images/Logo.png";
 import RoutesConfig from "./Components/RoutesConfig";
 import CustomerCare from "./Components/CustomerCare";
 import axios from "axios";

@@ -204,13 +204,15 @@ function NIN() {
     console.log("Payload for verification:", payload);
 
     try {
-      const response = await axios.post(
-        `${config.apiBaseUrl}${config.endpoints.NINVerify}`,
-        payload,
-        {
-          withCredentials: true,
-        }
-      );
+      // Use different endpoint for basic NIN verification
+      const endpoint =
+        selectedSlip === "basic"
+          ? `${config.apiBaseUrl}${config.endpoints.BasicNINVerification}`
+          : `${config.apiBaseUrl}${config.endpoints.NINVerify}`;
+
+      const response = await axios.post(endpoint, payload, {
+        withCredentials: true,
+      });
 
       console.log("Verification response:", response.data);
       setVerificationResult(response.data);
@@ -236,6 +238,7 @@ function NIN() {
       if (selectedSlip === "basic") {
         // Basic slip - navigate to existing NIN slip component
         const ninData = response.data?.data?.user_data.nin_data;
+        console.log("Navigating to basic slip with NIN data:", ninData);
         if (ninData) {
           navigate("/dashboard/verifications/ninslip", {
             state: { userData: ninData },
