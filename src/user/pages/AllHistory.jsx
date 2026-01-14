@@ -175,7 +175,7 @@ export default function VerificationsHistoryTable() {
         state: { responseData: transaction },
       });
     } else {
-      navigate("/dashboard/bvnhistory");
+      navigate("/dashboard/nihistory");
     }
   };
 
