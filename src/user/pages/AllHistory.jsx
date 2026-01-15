@@ -13,6 +13,7 @@ import {
 import { Empty, Modal } from "antd";
 import { InboxOutlined, EyeOutlined } from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
+import { useBVNSlip } from "../../context/BVNSlipContext";
 
 // Add your secret key for decryption
 const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY;
@@ -29,6 +30,7 @@ function decryptData(ciphertext) {
 }
 
 export default function VerificationsHistoryTable() {
+  const { viewSlip } = useBVNSlip();
   const navigate = useNavigate();
 
   // Get encrypted user data from localStorage
@@ -41,9 +43,7 @@ export default function VerificationsHistoryTable() {
 
   const [loading, setLoading] = React.useState(false);
   const [apiData, setApiData] = React.useState([]);
-  const [searchTerm, setSearchTerm] = React.useState("");
-  const [startDate, setStartDate] = React.useState(null);
-  const [endDate, setEndDate] = React.useState(null);
+  const [verificationType, setVerificationType] = React.useState("NIN-Slip");
   const [sortConfig, setSortConfig] = React.useState({
     key: "createdAt",
     direction: "desc",
@@ -74,30 +74,19 @@ export default function VerificationsHistoryTable() {
     }
   };
 
-  // Filter transactions based on search term and only show credit transactions
+  // Filter transactions based on verification type
   const filteredTransactions = apiData.filter((transaction) => {
-    const searchStr = searchTerm.toLowerCase();
-    const transactionDate = new Date(transaction.createdAt);
-
-    // Date filter
-    const passesDateFilter =
-      (!startDate || transactionDate >= startDate) &&
-      (!endDate || transactionDate <= endDate);
-
-    // Text search filter - updated to match verification data structure
-    const passesSearchFilter =
-      transaction.dataFor?.toLowerCase().includes(searchStr) ||
-      transaction.data?.verification?.reference
-        ?.toLowerCase()
-        .includes(searchStr) ||
-      transaction.data?.verification?.status
-        ?.toLowerCase()
-        .includes(searchStr) ||
-      transaction.verifyWith?.toLowerCase().includes(searchStr) ||
-      transaction.data?.detail?.toLowerCase().includes(searchStr);
-
-    return passesDateFilter && passesSearchFilter;
+    if (verificationType === "all") return true;
+    return transaction.dataFor === verificationType;
   });
+
+  // Get unique verification types from the data
+  const verificationTypes = React.useMemo(() => {
+    const types = [...new Set(apiData.map((item) => item.dataFor))].filter(
+      Boolean
+    );
+    return types.sort();
+  }, [apiData]);
 
   const sortData = (key) => {
     let direction = "asc";
@@ -160,22 +149,35 @@ export default function VerificationsHistoryTable() {
   };
   const handleViewSlip = (transaction) => {
     const slipType = transaction.slipLayout;
-    const apiData = transaction;
-    console.log("Transaction Data:", apiData);
-    if (slipType === "premium") {
-      navigate("/dashboard/verifications/premiumslip", {
-        state: { responseData: transaction },
-      });
-    } else if (slipType === "regular") {
-      navigate("/dashboard/verifications/regularslip", {
-        state: { responseData: transaction },
-      });
-    } else if (slipType === "standard") {
-      navigate("/dashboard/verifications/standardslip", {
-        state: { responseData: transaction },
-      });
-    } else {
-      navigate("/dashboard/nihistory");
+    const dataFor = transaction.dataFor;
+    console.log("Transaction Data:", transaction);
+
+    // Handle NIN-Slip
+    if (dataFor === "NIN-Slip") {
+      if (slipType === "premium") {
+        navigate("/dashboard/verifications/premiumslip", {
+          state: { responseData: transaction },
+        });
+      } else if (slipType === "regular") {
+        navigate("/dashboard/verifications/regularslip", {
+          state: { responseData: transaction },
+        });
+      } else if (slipType === "standard") {
+        navigate("/dashboard/verifications/standardslip", {
+          state: { responseData: transaction },
+        });
+      }
+    }
+    // Handle BVN-Slip
+    else if (dataFor === "BVN-Slip") {
+      const apiData = transaction.data?.data;
+      viewSlip(apiData, slipType);
+
+      if (slipType === "Basic") {
+        navigate("/dashboard/verifications/basicbvn");
+      } else {
+        navigate("/dashboard/verifications/advancedbvn");
+      }
     }
   };
 
@@ -195,35 +197,37 @@ export default function VerificationsHistoryTable() {
 
   return (
     <div className="p-4 w-full">
-      <h2 className="text-[clamp(1.2rem,2vw,2rem)] font-bold mb-4">
-        Summary of All Transaction History
-      </h2>
+      {/* Filter Verifications */}
+      <div className="mb-6">
+        <p className="text-sm font-medium text-gray-700 mb-3">Filter:</p>
+        <div className="flex flex-wrap gap-2">
+          {verificationTypes.map((type) => {
+            // Map internal type names to user-friendly labels
+            const typeLabels = {
+              "NIN-Slip": "NIN History",
+              "BVN-Slip": "BVN History",
+              "IPE-Slip": "IPE History",
+            };
+            const displayLabel = typeLabels[type] || type;
 
-      {/* Search and Date Filter Controls */}
-      <div className="mb-6 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
-        <input
-          type="text"
-          placeholder="Search transactions..."
-          className="p-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          value={searchTerm}
-          onChange={(e) => setSearchTerm(e.target.value)}
-        />
-        <DatePicker
-          selected={startDate}
-          onChange={(date) => setStartDate(date)}
-          placeholderText="Start Date"
-          className="p-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          dateFormat="dd/MM/yyyy"
-          isClearable
-        />
-        <DatePicker
-          selected={endDate}
-          onChange={(date) => setEndDate(date)}
-          placeholderText="End Date"
-          className="p-2 border rounded-lg w-full focus:ring-2 focus:ring-blue-500 focus:border-blue-500"
-          dateFormat="dd/MM/yyyy"
-          isClearable
-        />
+            return (
+              <button
+                key={type}
+                onClick={() => {
+                  setVerificationType(type);
+                  setCurrentPage(1);
+                }}
+                className={`px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
+                  verificationType === type
+                    ? "bg-blue-600 text-white shadow-md"
+                    : "bg-gray-100 text-gray-700 hover:bg-gray-200"
+                }`}
+              >
+                {displayLabel}
+              </button>
+            );
+          })}
+        </div>
       </div>
 
       {/* Loading Spinner */}
@@ -241,68 +245,219 @@ export default function VerificationsHistoryTable() {
       {!loading && sortedTransactions.length > 0 ? (
         <div className="relative overflow-hidden rounded-lg border border-gray-200 shadow">
           <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <table className="w-full table-auto divide-y divide-gray-200 transition-all duration-300 ease-in-out">
-              <thead className="bg-gray-50">
-                <tr>
-                  <TableHeader
-                    label="Date"
-                    sortKey="createdAt"
-                    className="w-[clamp(80px,15vw,112px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
-                  />
-                  <TableHeader
-                    label="Data For"
-                    sortKey="dataFor"
-                    className="w-[clamp(120px,20vw,160px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
-                  />
-                  <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                    View Slip
-                  </th>
-                  <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                    Details
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {paginatedData.map((transaction, index) => (
-                  <tr
-                    key={transaction._id || index}
-                    className="hover:bg-gray-50 transition-colors"
-                  >
-                    <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
-                      {format(
-                        new Date(transaction.createdAt),
-                        "dd/MM/yyyy HH:mm"
-                      )}
-                    </td>
-                    <td className="w-[clamp(120px,20vw,160px)] px-2 py-2 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium capitalize bg-blue-100 text-blue-800">
-                        {transaction.dataFor} - {transaction.slipLayout}
-                      </span>
-                    </td>
-                    <td className="w-[60px] px-2 py-2 whitespace-nowrap">
-                      {transaction.dataFor !== "IPE-Slip" ? (
+            {/* NIN-Slip Table */}
+            {verificationType === "NIN-Slip" && (
+              <table className="w-full table-auto divide-y divide-gray-200 transition-all duration-300 ease-in-out">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <TableHeader
+                      label="Date"
+                      sortKey="createdAt"
+                      className="w-[clamp(80px,15vw,112px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      NIN Number
+                    </th>
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      STATUS
+                    </th>
+                    <TableHeader
+                      label="Card Type"
+                      sortKey="dataFor"
+                      className="w-[clamp(120px,20vw,160px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      Download slip
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedData.map((transaction, index) => (
+                    <tr
+                      key={transaction._id || index}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
+                        {format(
+                          new Date(transaction.createdAt),
+                          "dd/MM/yyyy HH:mm"
+                        )}
+                      </td>
+                      <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium capitalize">
+                          {transaction.data?.user_data?.searchParameter ||
+                            "N/A"}
+                        </span>
+                      </td>
+                      <td className="py-2">
+                        <span className="mt-1 text-[11px] font-medium px-2 py-0.5 rounded-full inline-block bg-blue-100 text-blue-800">
+                          {transaction.data?.user_data?.transactionStatus ||
+                            "N/A"}
+                        </span>
+                      </td>
+                      <td className="w-[clamp(120px,20vw,160px)] px-2 py-2 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium capitalize bg-blue-100 text-blue-800">
+                          {transaction.dataFor} - {transaction.slipLayout}
+                        </span>
+                      </td>
+                      <td className="w-[60px] px-2 py-2 whitespace-nowrap">
                         <button
                           onClick={() => handleViewSlip(transaction)}
                           className="text-green-600 hover:text-green-800 transition-colors"
                         >
                           <EyeOutlined className="text-lg" />
                         </button>
-                      ) : (
-                        <span className="text-gray-400">N/A</span>
-                      )}
-                    </td>
-                    <td className="w-[60px] px-2 py-2 whitespace-nowrap">
-                      <button
-                        onClick={() => showModal(transaction)}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                      >
-                        <EyeOutlined className="text-lg" />
-                      </button>
-                    </td>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
+
+            {/* BVN-Slip Table */}
+            {verificationType === "BVN-Slip" && (
+              <table className="w-full table-auto divide-y divide-gray-200 transition-all duration-300 ease-in-out">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <TableHeader
+                      label="Date"
+                      sortKey="createdAt"
+                      className="w-[clamp(80px,15vw,112px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      BVN Number
+                    </th>
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      STATUS
+                    </th>
+                    <TableHeader
+                      label="Card Type"
+                      sortKey="dataFor"
+                      className="w-[clamp(120px,20vw,160px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      Download slip
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedData
+                    .filter((t) =>
+                      verificationType === "all"
+                        ? t.dataFor === "BVN-Slip"
+                        : true
+                    )
+                    .map((transaction, index) => (
+                      <tr
+                        key={transaction._id || index}
+                        className="hover:bg-gray-50 transition-colors"
+                      >
+                        <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
+                          {format(
+                            new Date(transaction.createdAt),
+                            "dd/MM/yyyy HH:mm"
+                          )}
+                        </td>
+                        <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium capitalize">
+                            {transaction.data?.data?.bvn || "N/A"}
+                          </span>
+                        </td>
+                        <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
+                          <span className="mt-1 text-sm font-medium capitalize px-2 py-0.5 rounded-full inline-block bg-blue-100 text-blue-800">
+                            {transaction.data?.verification?.status || "N/A"}
+                          </span>
+                        </td>
+                        <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
+                          <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium capitalize bg-blue-100 text-blue-800">
+                            {transaction.dataFor}-{transaction.slipLayout}
+                          </span>
+                        </td>
+                        <td className="w-[60px] px-2 py-2 whitespace-nowrap">
+                          <button
+                            onClick={() => handleViewSlip(transaction)}
+                            className="text-green-600 hover:text-green-800 transition-colors"
+                          >
+                            <EyeOutlined className="text-lg" />
+                          </button>
+                        </td>
+                      </tr>
+                    ))}
+                </tbody>
+              </table>
+            )}
+
+            {/* IPE-Slip Table */}
+            {verificationType === "IPE-Slip" && (
+              <table className="w-full table-auto divide-y divide-gray-200 transition-all duration-300 ease-in-out">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <TableHeader
+                      label="Date"
+                      sortKey="createdAt"
+                      className="w-[clamp(80px,15vw,112px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <TableHeader
+                      label="Status"
+                      sortKey="status"
+                      className="w-[100px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
+                    />
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      Tracking ID
+                    </th>
+                    <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                      Details
+                    </th>
+                  </tr>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedData.map((transaction, index) => (
+                    <tr
+                      key={transaction._id || index}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
+                        {format(
+                          new Date(transaction.createdAt),
+                          "dd/MM/yyyy HH:mm:ss"
+                        )}
+                      </td>
+                      <td className="w-[100px] py-2 whitespace-nowrap">
+                        <span
+                          className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
+                            transaction?.status?.toLowerCase() === "pending"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-green-100 text-green-800"
+                          }`}
+                        >
+                          {transaction?.status ||
+                            transaction.data?.result?.data
+                              ?.verification_status ||
+                            "N/A"}
+                        </span>
+                      </td>
+                      <td className="w-[60px] py-2 whitespace-nowrap">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
+                          {transaction.data?.reply ||
+                            transaction?.trackingId ||
+                            transaction.data?.result?.data?.structured_summary
+                              ?.new_tracking_id ||
+                            "N/A"}
+                        </span>
+                      </td>
+                      <td className="w-[60px] px-2 py-2 whitespace-nowrap">
+                        <button
+                          onClick={() => showModal(transaction)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors"
+                        >
+                          <EyeOutlined className="text-lg" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            )}
           </div>
         </div>
       ) : !loading ? (
