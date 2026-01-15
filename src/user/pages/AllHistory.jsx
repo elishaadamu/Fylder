@@ -451,7 +451,7 @@ export default function VerificationsHistoryTable() {
                       NIN
                     </th>
                     <th className="w-[90px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                      Details
+                      Check IPE
                     </th>
                   </tr>
                 </thead>
@@ -499,13 +499,13 @@ export default function VerificationsHistoryTable() {
                       </td>
                       <td className="w-[90px] px-2 py-2 whitespace-nowrap">
                         <div className="flex items-center gap-2">
-                          <button
+                          {/* <button
                             onClick={() => showModal(transaction)}
                             className="text-blue-600 hover:text-blue-800 transition-colors"
                             title="View Details"
                           >
                             <EyeOutlined className="text-lg" />
-                          </button>
+                          </button> */}
                           <button
                             onClick={() => handleRetryVerification(transaction)}
                             className="text-orange-500 hover:text-orange-700 transition-colors"

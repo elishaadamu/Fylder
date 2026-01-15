@@ -157,7 +157,7 @@ export default function VerificationsHistoryTable() {
         { withCredentials: true }
       );
 
-      toast.success("IPE Clearance verified successfully!");
+      toast.success("IPE Clearance check successfully!");
       fetchVerificationHistory();
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
@@ -397,17 +397,22 @@ export default function VerificationsHistoryTable() {
                     sortKey="createdAt"
                     className="w-[clamp(80px,15vw,112px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
                   />
-
+                  <th className="w-[clamp(120px,20vw,160px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    Old Tracking ID
+                  </th>
                   <TableHeader
                     label="Status"
                     sortKey="status"
                     className="w-[100px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200"
                   />
-                  <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                    Tracking ID
+                  <th className="w-[clamp(120px,20vw,160px)] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    New Tracking ID
                   </th>
-                  <th className="w-[60px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
-                    Details
+                  <th className="w-[100px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    NIN
+                  </th>
+                  <th className="w-[90px] px-2 py-2 text-left text-[clamp(0.65rem,1vw,0.75rem)] font-medium text-gray-500 uppercase tracking-wider border-b border-gray-200">
+                    Check IPE
                   </th>
                 </tr>
               </thead>
@@ -418,39 +423,58 @@ export default function VerificationsHistoryTable() {
                     className="hover:bg-gray-50 transition-colors"
                   >
                     <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
-                      {formatDate(transaction.createdAt)}
+                      {format(
+                        new Date(transaction.createdAt),
+                        "dd/MM/yyyy HH:mm:ss"
+                      )}
                     </td>
-
+                    <td className="w-[clamp(120px,20vw,160px)] px-2 py-2 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium">
+                        {transaction?.trackingId || "N/A"}
+                      </span>
+                    </td>
                     <td className="w-[100px] py-2 whitespace-nowrap">
                       <span
                         className={`inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium capitalize ${
                           transaction?.status?.toLowerCase() === "pending"
-                            ? "bg-blue-100 text-blue-800"
-                            : "bg-green-100 text-green-800"
+                            ? "bg-yellow-100 text-yellow-800"
+                            : transaction?.status?.toLowerCase() === "success"
+                            ? "bg-green-100 text-green-800"
+                            : transaction?.status?.toLowerCase() === "failed"
+                            ? "bg-red-100 text-red-800"
+                            : "bg-gray-100 text-gray-800"
                         }`}
                       >
-                        {transaction?.status ||
-                          transaction.data?.result?.data?.verification_status ||
-                          "N/A"}
+                        {transaction?.status || "N/A"}
                       </span>
                     </td>
-                    <td className="w-[60px]  py-2 whitespace-nowrap">
-                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium">
-                        {transaction.data?.reply ||
-                          transaction?.trackingId ||
-                          transaction.data?.result?.data?.structured_summary
-                            ?.new_tracking_id ||
-                          "N/A"}
+                    <td className="w-[clamp(120px,20vw,160px)] px-2 py-2 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium">
+                        {transaction.data?.reply || "N/A"}
                       </span>
                     </td>
-                    <td className="w-[60px] px-2 py-2 whitespace-nowrap">
-                      <button
-                        onClick={() => handleRetryVerification(transaction)}
-                        className="text-orange-500 hover:text-orange-700 transition-colors"
-                        title="Re-check Status"
-                      >
-                        <SyncOutlined className="text-lg" />
-                      </button>
+                    <td className="w-[100px] px-2 py-2 whitespace-nowrap">
+                      <span className="inline-flex items-center px-2 py-0.5 rounded-full text-[clamp(0.65rem,1vw,0.75rem)] font-medium">
+                        {transaction.data?.nin || "N/A"}
+                      </span>
+                    </td>
+                    <td className="w-[90px] px-2 py-2 whitespace-nowrap">
+                      <div className="flex items-center gap-2">
+                        {/* <button
+                                       onClick={() => showModal(transaction)}
+                                       className="text-blue-600 hover:text-blue-800 transition-colors"
+                                       title="View Details"
+                                     >
+                                       <EyeOutlined className="text-lg" />
+                                     </button> */}
+                        <button
+                          onClick={() => handleRetryVerification(transaction)}
+                          className="text-orange-500 hover:text-orange-700 transition-colors"
+                          title="Re-check Status"
+                        >
+                          <SyncOutlined className="text-lg" />
+                        </button>
+                      </div>
                     </td>
                   </tr>
                 ))}
