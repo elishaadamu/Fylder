@@ -88,7 +88,6 @@ function IPEClearance() {
       userId,
       pin: formData.pin,
     };
-    console.log("Payload sent,", payload);
     try {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.ipeSubmit}`,
@@ -100,8 +99,6 @@ function IPEClearance() {
       setIsSuccessModalVisible(true);
       toast.success("IPE Clearance verified successfully!");
     } catch (error) {
-      console.error("Verification error:", error);
-
       toast.error(error.response?.data?.error || "Verification failed");
     } finally {
       setLoading(false);
@@ -126,9 +123,7 @@ function IPEClearance() {
           const userObj = decryptData(userStr);
           userId = userObj?._id || userObj?.id;
         }
-      } catch (error) {
-        console.error("Error getting user ID:", error);
-      }
+      } catch (error) {}
 
       if (!userId) {
         toast.error("User not found. Please login again.");
@@ -139,7 +134,6 @@ function IPEClearance() {
         trackingId: formData.trackingId,
         userId: userId,
       };
-      console.log("IPE Payload", payload);
 
       // Trigger the free status IPE endpoint
       await axios.post(
@@ -162,7 +156,6 @@ function IPEClearance() {
       navigate("/dashboard/ipe-history");
       setIsSuccessModalVisible(false);
     } catch (error) {
-      console.error("Error triggering free status IPE:", error);
       // Still navigate even if the API call fails
       toast.info("You are being directed to the IPE History to view details.");
       setTimeout(() => {
@@ -181,7 +174,6 @@ function IPEClearance() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("Fetched pricing data:", response.data);
         // Find IPE pricing
         const ipePricingData = Array.isArray(response.data)
           ? response.data.find((item) => item.key === "ipe")
@@ -194,7 +186,6 @@ function IPEClearance() {
           setAmount(ipePricing.prices.agent);
         }
       } catch (error) {
-        console.error("Error fetching IPE price:", error);
         toast.error("Failed to fetch current price");
       } finally {
         setPriceLoading(false);

@@ -46,7 +46,6 @@ function Validation() {
       userPhone = userObj?.phone || userObj?.phoneNumber;
     }
   } catch (error) {
-    console.error("Error getting userId:", error);
   }
 
   useEffect(() => {
@@ -64,7 +63,6 @@ function Validation() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("API Prices Response:", response.data);
 
         // Find validation pricing
         const validationPricingData = Array.isArray(response.data)
@@ -82,13 +80,8 @@ function Validation() {
             ...prev,
             "No Record Found": validationPricing.prices.agent,
           }));
-          console.log(
-            "Validation agent price set to:",
-            validationPricing.prices.agent
-          );
         }
       } catch (error) {
-        console.error("Error fetching API prices:", error);
         toast.error("Failed to fetch current prices");
       } finally {
         setPriceLoading(false);
@@ -128,15 +121,11 @@ function Validation() {
         phone: values.phoneNumber,
         pin: values.pin,
       };
-      console.log("Payload:", payload);
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.Validation}`,
         payload
       );
-      console.log("Response status:", response);
-
-      const data = response.data;
-      console.log("Response data:", data);
+      
 
       await Swal.fire({
         icon: "success",
@@ -147,8 +136,6 @@ function Validation() {
 
       form.resetFields();
     } catch (error) {
-      console.error("Registration error:", error);
-
       Swal.fire({
         icon: "error",
         title: "Registration Failed",

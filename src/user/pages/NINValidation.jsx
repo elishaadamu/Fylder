@@ -21,9 +21,7 @@ function NIN() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("API Prices Response:", response.data);
       } catch (error) {
-        console.error("Error fetching API prices:", error);
         toast.error("Failed to fetch current prices");
       }
     };
@@ -97,8 +95,6 @@ function NIN() {
       validationType: selectedValidationType, // ✅ added to payload
     };
 
-    console.log("Payload for verification:", payload);
-
     try {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.ninvalidation}`,
@@ -106,7 +102,6 @@ function NIN() {
         { withCredentials: true }
       );
 
-      console.log("Verification response:", response.data);
       setVerificationResult(response.data);
 
       await Swal.fire({
@@ -118,7 +113,6 @@ function NIN() {
 
       toast.success("NIN verified successfully!");
     } catch (error) {
-      console.error("Verification error:", error);
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);

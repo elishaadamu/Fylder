@@ -58,7 +58,7 @@ export default function EnrollmentHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data.enrol);
+
       let enrollmentData = response.data?.enrol;
       if (enrollmentData && !Array.isArray(enrollmentData)) {
         // If it's a single object, wrap it in an array
@@ -67,7 +67,6 @@ export default function EnrollmentHistory() {
       // Ensure we always set an array
       setApiData(Array.isArray(enrollmentData) ? enrollmentData : []);
     } catch (error) {
-      console.error("Error fetching Enrollment history:", error);
     } finally {
       setLoading(false);
     }

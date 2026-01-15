@@ -64,12 +64,10 @@ export default function VerificationsHistoryTable() {
           "Content-Type": "application/json",
         },
       });
-      console.log("API Response:", response.data);
 
       const details = response.data?.findData || [];
       setApiData(details || []);
     } catch (error) {
-      console.error("Error fetching verification history:", error);
     } finally {
       setLoading(false);
     }
@@ -164,7 +162,6 @@ export default function VerificationsHistoryTable() {
   const handleViewSlip = (transaction) => {
     const slipType = transaction.slipLayout;
     const apiData = transaction;
-    console.log("Transaction Data:", apiData);
     if (slipType === "premium") {
       navigate("/dashboard/verifications/premiumslip", {
         state: { responseData: transaction },

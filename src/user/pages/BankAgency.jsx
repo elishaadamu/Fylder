@@ -66,7 +66,6 @@ function BankAgency() {
         }
       })
       .catch((error) => {
-        console.error("Error fetching banks:", error);
         message.error("Failed to load banks");
       });
   }, []);
@@ -185,7 +184,6 @@ function BankAgency() {
           userId = userObj?._id || userObj?.id;
         }
       } catch (error) {
-        console.error("Error decrypting user data:", error);
         throw new Error("User authentication failed");
       }
 
@@ -219,8 +217,6 @@ function BankAgency() {
         passport: passportBase64,
       };
 
-      console.log("Payload:", payload);
-
       const response = await fetch(
         `${config.apiBaseUrl}${config.endpoints.bankAgentRegistration}`,
         {
@@ -252,7 +248,6 @@ function BankAgency() {
         throw new Error(data.message || "Registration failed");
       }
     } catch (error) {
-      console.error("Registration error:", error);
       Swal.fire({
         icon: "error",
         title: "Registration Failed",

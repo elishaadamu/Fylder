@@ -58,7 +58,7 @@ export default function NINModificationHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data.modify);
+
       let modificationData = response.data?.modify;
       if (modificationData && !Array.isArray(modificationData)) {
         // If it's a single object, wrap it in an array
@@ -67,7 +67,6 @@ export default function NINModificationHistory() {
       // Ensure we always set an array
       setApiData(Array.isArray(modificationData) ? modificationData : []);
     } catch (error) {
-      console.error("Error fetching modification history:", error);
     } finally {
       setLoading(false);
     }

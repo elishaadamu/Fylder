@@ -42,7 +42,6 @@ function Personalisation() {
           setPersonalisationPrice(personalisationPricing.prices.agent);
         }
       } catch (error) {
-        console.error("Error fetching API prices:", error);
         toast.error("Failed to fetch current prices");
       }
     };
@@ -94,9 +93,7 @@ function Personalisation() {
       userId = userObj?._id || userObj?.id;
       userPhone = userObj?.phone || userObj?.phoneNumber;
     }
-  } catch (error) {
-    console.error("Error getting user data:", error);
-  }
+  } catch (error) {}
 
   useEffect(() => {
     if (userPhone) {
@@ -145,7 +142,6 @@ function Personalisation() {
       pin: formData.pin,
     };
 
-    console.log("payload:", payload);
     try {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.Personalisation}`,
@@ -164,7 +160,6 @@ function Personalisation() {
         confirmButtonColor: "#f59e0b",
       });
     } catch (error) {
-      console.error("Verification error:", error);
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);

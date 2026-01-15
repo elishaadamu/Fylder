@@ -70,14 +70,13 @@ export default function PersonalisationHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data);
+
       let personalisationData = response.data?.personalizationRes;
       if (personalisationData && !Array.isArray(personalisationData)) {
         personalisationData = [personalisationData];
       }
       setApiData(Array.isArray(personalisationData) ? personalisationData : []);
     } catch (error) {
-      console.error("Error fetching Enrollment history:", error);
     } finally {
       setLoading(false);
     }

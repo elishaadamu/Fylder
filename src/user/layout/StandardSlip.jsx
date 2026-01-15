@@ -8,7 +8,6 @@ import { AiOutlineLoading3Quarters } from "react-icons/ai";
 function StandardSlip() {
   const location = useLocation();
   const responseData = location.state?.responseData;
-  console.log("Full Response Data:", responseData);
   const slipType = location.state?.slipType || "standard";
 
   const [pdfUrl, setPdfUrl] = useState(null);
@@ -25,36 +24,21 @@ function StandardSlip() {
   useEffect(() => {
     const processPdfData = () => {
       try {
-        // Debug: Log the entire response structure
-        console.log("Processing response data:", responseData);
-
         // Try to find PDF data in different possible locations
         let pdfBase64 = null;
 
         // Check various possible locations for the PDF data
         if (responseData.pdf_base64) {
           pdfBase64 = responseData.pdf_base64;
-          console.log("Found PDF in responseData.pdf_base64");
         } else if (responseData.data?.pdf_base64) {
           pdfBase64 = responseData.data.pdf_base64;
-          console.log("Found PDF in responseData.data.pdf_base64");
         } else if (responseData.data?.data?.pdf_base64) {
           pdfBase64 = responseData.data.data.pdf_base64;
-          console.log("Found PDF in responseData.data.data.pdf_base64");
         } else if (responseData.pdfBase64) {
           pdfBase64 = responseData.pdfBase64;
-          console.log("Found PDF in responseData.pdfBase64");
         } else if (responseData.data?.pdfBase64) {
           pdfBase64 = responseData.data.pdfBase64;
-          console.log("Found PDF in responseData.data.pdfBase64");
         }
-
-        console.log("PDF Base64 found:", !!pdfBase64);
-        console.log("PDF Base64 length:", pdfBase64?.length || 0);
-        console.log(
-          "PDF Base64 preview:",
-          pdfBase64?.substring(0, 50) || "None"
-        );
 
         if (pdfBase64) {
           // Clean the base64 string (remove any whitespace or line breaks)
@@ -65,9 +49,6 @@ function StandardSlip() {
             cleanBase64 = cleanBase64.split(",")[1];
           }
 
-          console.log("Cleaned Base64 length:", cleanBase64.length);
-          console.log("Cleaned Base64 preview:", cleanBase64.substring(0, 50));
-
           // Validate that it's a valid base64 string
           if (!/^[A-Za-z0-9+/]*={0,2}$/.test(cleanBase64)) {
             throw new Error("Invalid base64 format");
@@ -77,7 +58,6 @@ function StandardSlip() {
           try {
             const testDecode = window.atob(cleanBase64.substring(0, 20));
             if (!testDecode.startsWith("%PDF")) {
-              console.warn("Base64 doesn't appear to be a PDF file");
             }
           } catch (testError) {
             throw new Error("Base64 string is not valid");
@@ -91,18 +71,12 @@ function StandardSlip() {
             bytes[i] = binaryString.charCodeAt(i);
           }
 
-          console.log(
-            "Binary conversion successful, bytes length:",
-            bytes.length
-          );
-
           // Create blob from binary data
           const blob = new Blob([bytes], { type: "application/pdf" });
           setPdfBlob(blob); // Store the blob separately
 
           // Create URL for the blob
           const url = URL.createObjectURL(blob);
-          console.log("Blob created successfully, URL:", url);
 
           setPdfUrl(url);
           setLoading(false);
@@ -112,43 +86,11 @@ function StandardSlip() {
             autoClose: 3000,
           });
         } else {
-          // Enhanced debugging - log the complete structure
-          console.log(
-            "Available keys in responseData:",
-            Object.keys(responseData)
-          );
-          if (responseData.data) {
-            console.log(
-              "Available keys in responseData.data:",
-              Object.keys(responseData.data)
-            );
-            if (responseData.data.data) {
-              console.log(
-                "Available keys in responseData.data.data:",
-                Object.keys(responseData.data.data)
-              );
-            }
-          }
-
-          // Log the entire response for debugging
-          console.log(
-            "Complete response structure:",
-            JSON.stringify(responseData, null, 2)
-          );
-
           throw new Error(
             "No PDF data found in response. Check console for complete response structure."
           );
         }
       } catch (err) {
-        console.error("Error processing PDF:", err);
-        console.error("Error stack:", err.stack);
-        console.error("Full error details:", {
-          message: err.message,
-          responseData: responseData,
-          availableKeys: Object.keys(responseData || {}),
-        });
-
         setError(`Failed to load PDF data: ${err.message}`);
         setLoading(false);
         toast.error(`Failed to load PDF data: ${err.message}`, {
@@ -187,7 +129,6 @@ function StandardSlip() {
         autoClose: 3000,
       });
     } catch (err) {
-      console.error("Error downloading PDF:", err);
       toast.error("Failed to download PDF", {
         position: "top-right",
         autoClose: 3000,
@@ -208,7 +149,6 @@ function StandardSlip() {
         autoClose: 2000,
       });
     } catch (err) {
-      console.error("Error opening PDF:", err);
       toast.error("Failed to open PDF", {
         position: "top-right",
         autoClose: 3000,
@@ -237,7 +177,6 @@ function StandardSlip() {
   };
 
   const handleIframeError = () => {
-    console.log("Iframe failed to load PDF");
     setIframeError(true);
   };
 
@@ -358,7 +297,6 @@ function StandardSlip() {
                   className="w-full h-96 border-0"
                   title={`${slipType} NIN Slip PDF`}
                   onError={handleIframeError}
-                  onLoad={() => console.log("PDF iframe loaded successfully")}
                 />
               </div>
             ) : (

@@ -41,7 +41,6 @@ function AirtimeSub() {
               );
               setAccount(response.data);
             } catch (error) {
-              console.error("Error fetching account:", error);
               toast.error("Could not fetch account details");
             }
           }
@@ -49,7 +48,6 @@ function AirtimeSub() {
           toast.error("Please login to continue");
         }
       } catch (error) {
-        console.error("Error fetching user data:", error);
         toast.error("Error fetching user data");
       } finally {
         setLoadingAccount(false);
@@ -128,7 +126,6 @@ function AirtimeSub() {
         `${config.apiBaseUrl}${config.endpoints.airtimeSubscription}`,
         payload
       );
-      console.log("Airtime purchase response:", response.data);
       if (response.data?.data.Status === "successful") {
         try {
           // Refresh account balance first
@@ -159,7 +156,6 @@ function AirtimeSub() {
           // Reset form after showing success message
           form.resetFields();
         } catch (error) {
-          console.error("Error updating balance:", error);
           Swal.fire({
             title: "Warning!",
             text: "Transaction successful but balance may be outdated. Please refresh.",
@@ -176,7 +172,6 @@ function AirtimeSub() {
         });
       }
     } catch (error) {
-      console.error("Transaction error:", error);
       Swal.fire({
         title: "Error!",
         text:

@@ -60,11 +60,9 @@ export default function VerificationsHistoryTable() {
           "Content-Type": "application/json",
         },
       });
-      console.log("API Response:", response.data);
 
       setApiData(response.data?.transactions || []);
     } catch (error) {
-      console.error("Error fetching verification history:", error);
     } finally {
       setLoading(false);
     }

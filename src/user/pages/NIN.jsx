@@ -40,7 +40,6 @@ function NIN() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("API Prices Response:", response.data);
         // Find NIN pricing
         const ninPricingData = Array.isArray(response.data)
           ? response.data.find((item) => item.key === "nin")
@@ -59,7 +58,6 @@ function NIN() {
           setAgentPrices(updatedCardSlip);
         }
       } catch (error) {
-        console.error("Error fetching API prices:", error);
         toast.error("Failed to fetch current prices");
       } finally {
         setPriceLoading(false);
@@ -201,8 +199,6 @@ function NIN() {
       payload.nin = formData.nin;
     }
 
-    console.log("Payload for verification:", payload);
-
     try {
       // Use different endpoint for basic NIN verification
       const endpoint =
@@ -214,7 +210,6 @@ function NIN() {
         withCredentials: true,
       });
 
-      console.log("Verification response:", response.data);
       setVerificationResult(response.data);
 
       // Show success alert
@@ -238,7 +233,6 @@ function NIN() {
       if (selectedSlip === "basic") {
         // Basic slip - navigate to existing NIN slip component
         const ninData = response.data?.data?.user_data.nin_data;
-        console.log("Navigating to basic slip with NIN data:", ninData);
         if (ninData) {
           navigate("/dashboard/verifications/ninslip", {
             state: { userData: ninData },
@@ -249,10 +243,6 @@ function NIN() {
       } else if (selectedSlip === "regular") {
         // Regular, Standard, or Premium slip - navigate to new PDF component
         const slipTypeName = "regular";
-        console.log("Navigating to regular slip with data:", {
-          responseData: response.data,
-          slipType: slipTypeName,
-        });
         navigate("/dashboard/verifications/regularslip", {
           state: {
             responseData: response.data,
@@ -262,10 +252,6 @@ function NIN() {
       } else if (selectedSlip === "standard") {
         // Regular, Standard, or Premium slip - navigate to new PDF component
         const slipTypeName = "standard";
-        console.log("Navigating to standard slip with data:", {
-          responseData: response.data,
-          slipType: slipTypeName,
-        });
         navigate("/dashboard/verifications/standardslip", {
           state: {
             responseData: response.data,
@@ -275,10 +261,6 @@ function NIN() {
       } else if (selectedSlip === "premium") {
         // Regular, Standard, or Premium slip - navigate to new PDF component
         const slipTypeName = "premium";
-        console.log("Navigating to premium slip with data:", {
-          responseData: response.data,
-          slipType: slipTypeName,
-        });
         navigate("/dashboard/verifications/premiumslip", {
           state: {
             responseData: response.data,
@@ -289,7 +271,6 @@ function NIN() {
         return null;
       }
     } catch (error) {
-      console.error("Verification error:", error);
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);

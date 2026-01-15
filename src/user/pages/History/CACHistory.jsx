@@ -58,7 +58,7 @@ export default function CACHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log("CAC History Response:", response.data);
+
       // Handle cases where API returns a single object or an array
       let cacData = response.data?.cac || response.data;
       if (cacData && !Array.isArray(cacData)) {
@@ -67,7 +67,6 @@ export default function CACHistory() {
       }
       setApiData(Array.isArray(cacData) ? cacData : []);
     } catch (error) {
-      console.error("Error fetching CAC history:", error);
     } finally {
       setLoading(false);
     }

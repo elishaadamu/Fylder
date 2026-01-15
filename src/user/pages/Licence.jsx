@@ -63,9 +63,7 @@ function BVNLicence() {
       const userObj = decryptData(userStr);
       userId = userObj?._id || userObj?.id;
     }
-  } catch (error) {
-    console.error("Error getting userId:", error);
-  }
+  } catch (error) {}
 
   const onFinish = async (values) => {
     setLoading(true);
@@ -117,8 +115,6 @@ function BVNLicence() {
         throw new Error(data.message || "Registration failed");
       }
     } catch (error) {
-      console.error("Registration error:", error);
-
       Swal.fire({
         icon: "error",
         title: "Registration Failed",
@@ -150,7 +146,6 @@ function BVNLicence() {
         }
       })
       .catch((error) => {
-        console.error("Error fetching banks:", error);
         message.error("Failed to load banks");
       })
       .finally(() => setBanksLoading(false));

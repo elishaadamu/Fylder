@@ -11,10 +11,16 @@ import {
   ArrowDownIcon,
 } from "@heroicons/react/24/solid";
 import { Empty, Modal, Tooltip } from "antd";
-import { InboxOutlined, EyeOutlined, ReloadOutlined } from "@ant-design/icons"; // Added ReloadOutlined
+import {
+  InboxOutlined,
+  EyeOutlined,
+  ReloadOutlined,
+  SyncOutlined,
+} from "@ant-design/icons";
 import { useNavigate } from "react-router-dom";
-import { toast } from "react-toastify"; // Add toast import
-import Swal from "sweetalert2"; // Add Swal import
+import { toast, ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import Swal from "sweetalert2";
 
 // Add your secret key for decryption
 const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY;
@@ -77,9 +83,7 @@ export default function VerificationsHistoryTable() {
           const userObj = decryptData(userStr);
           userId = userObj?._id || userObj?.id;
         }
-      } catch (error) {
-        console.error("Error getting user ID:", error);
-      }
+      } catch (error) {}
 
       if (!userId) {
         toast.error("User not found. Please login again.");
@@ -102,7 +106,6 @@ export default function VerificationsHistoryTable() {
         trackingId: trackingId,
         userId: userId,
       };
-      console.log("IPE Payload", payload);
 
       // Show loading toast
       toast.info("Fetching latest status...");
@@ -120,8 +123,46 @@ export default function VerificationsHistoryTable() {
       // Refresh the current page data
       fetchVerificationHistory();
     } catch (error) {
-      console.error("Error triggering free status IPE:", error);
       toast.error("Failed to fetch latest status. Please try again.");
+    }
+  };
+
+  const handleRetryVerification = async (transaction) => {
+    const result = await Swal.fire({
+      title: "Confirm IPE Clearance",
+      html: `
+        <p class="mb-2 text-gray-500">Please confirm your details:</p>
+        <p class="mb-2 text-gray-500">Tracking ID: ${transaction.trackingId}</p>
+      `,
+      icon: "warning",
+      showCancelButton: true,
+      confirmButtonColor: "#f59e0b",
+      cancelButtonColor: "#d33",
+      confirmButtonText: "Yes, proceed",
+      cancelButtonText: "Cancel",
+    });
+
+    if (!result.isConfirmed) return;
+
+    setLoading(true);
+    const payload = {
+      trackingId: transaction.trackingId,
+      userId,
+    };
+
+    try {
+      const response = await axios.post(
+        `${config.apiBaseUrl}${config.endpoints.checkStatusipe}`,
+        payload,
+        { withCredentials: true }
+      );
+
+      toast.success("IPE Clearance verified successfully!");
+      fetchVerificationHistory();
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Verification failed");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -136,12 +177,10 @@ export default function VerificationsHistoryTable() {
           "Content-Type": "application/json",
         },
       });
-      console.log("API Response:", response.data);
 
       const details = response.data?.findData || [];
       setApiData(details || []);
     } catch (error) {
-      console.error("Error fetching verification history:", error);
     } finally {
       setLoading(false);
     }
@@ -239,7 +278,7 @@ export default function VerificationsHistoryTable() {
     const slipType = transaction.slipLayout;
     const verificationType = transaction.verifyWith;
     const apiData = transaction.data?.data;
-    console.log("Transaction Data:", apiData);
+
     if (verificationType === "nin") {
       navigate("/dashboard/verifications/ninslip", {
         state: { userData: transaction.data?.nin_data },
@@ -272,17 +311,13 @@ export default function VerificationsHistoryTable() {
           },
         });
 
-        console.log("Raw API Response:", response.data);
         const details = response.data?.findData || [];
 
         // Log IPE-Slip specific transactions
         const ipeSlips = details.filter((item) => item.dataFor === "IPE-Slip");
-        console.log("IPE-Slip Transactions:", ipeSlips);
 
         setApiData(details || []);
-      } catch (error) {
-        console.error("Error fetching data:", error);
-      }
+      } catch (error) {}
     };
 
     if (userId) {
@@ -410,10 +445,11 @@ export default function VerificationsHistoryTable() {
                     </td>
                     <td className="w-[60px] px-2 py-2 whitespace-nowrap">
                       <button
-                        onClick={() => showModal(transaction)}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
+                        onClick={() => handleRetryVerification(transaction)}
+                        className="text-orange-500 hover:text-orange-700 transition-colors"
+                        title="Re-check Status"
                       >
-                        <EyeOutlined className="text-lg" />
+                        <SyncOutlined className="text-lg" />
                       </button>
                     </td>
                   </tr>
@@ -692,6 +728,7 @@ export default function VerificationsHistoryTable() {
           </div>
         )}
       </Modal>
+      <ToastContainer />
     </div>
   );
 }

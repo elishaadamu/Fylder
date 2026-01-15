@@ -8,7 +8,6 @@ export const fetchDataPlans = async () => {
     const plans = await response.json();
     return plans;
   } catch (error) {
-    console.error("Error fetching data plans:", error);
     return [];
   }
 };
@@ -25,7 +24,6 @@ export const getDataPlansByType = async (planType) => {
       plans: filteredPlans,
     };
   } catch (error) {
-    console.error(`Error getting ${planType} plans:`, error);
     return {
       planType,
       plans: [],

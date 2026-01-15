@@ -288,7 +288,6 @@ function Dashboard() {
 
       toast.success("Wallet created successfully!");
     } catch (error) {
-      console.error("Wallet creation error:", error);
       toast.error(error.response?.data?.message || "Failed to create wallet.");
     } finally {
       setCreatingAccount(false);
@@ -303,10 +302,8 @@ function Dashboard() {
         const accountRes = await axios.get(
           `${config.apiBaseUrl}${config.endpoints.walletBalance}${userId}`
         );
-        console.log("Account details fetched:", accountRes.data);
         setAccount(accountRes.data.wallet);
       } catch (err) {
-        console.error("Fetch account error:", err);
         setAccount(null);
       } finally {
         setLoadingAccount(false);
@@ -434,7 +431,6 @@ function Dashboard() {
 
         setVerificationCount(totalCount);
       } catch (error) {
-        console.error("Error fetching verification count:", error);
         setVerificationCount(0);
       } finally {
         setLoadingVerifications(false);

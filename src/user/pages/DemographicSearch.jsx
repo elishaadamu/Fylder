@@ -46,7 +46,6 @@ function DemographicSearch() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("Pricing response:", response.data);
         // Find demographic search pricing
         const demographicPricingData = response.data.find(
           (item) => item.key === "demographic"
@@ -60,7 +59,6 @@ function DemographicSearch() {
           });
         }
       } catch (error) {
-        console.error("Error fetching API prices:", error);
         toast.error("Failed to fetch current prices");
       } finally {
         setPriceLoading(false);
@@ -78,10 +76,8 @@ function DemographicSearch() {
       const userObj = decryptData(userStr);
       userId = userObj?._id || userObj?.id;
       userPhone = userObj?.phone || userObj?.phoneNumber;
-      console.log("UserId", userId);
     }
   } catch (error) {
-    console.error("Error getting userId:", error);
   }
 
   useEffect(() => {
@@ -122,8 +118,6 @@ function DemographicSearch() {
         pin: values.pin,
       };
 
-      console.log("Payload:", payload);
-
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.DemographicSearch}`,
         payload,
@@ -144,8 +138,6 @@ function DemographicSearch() {
 
       form.resetFields();
     } catch (error) {
-      console.error("Search error:", error);
-
       // Handle axios error responses
       const errorMessage =
         error.response?.data?.message ||

@@ -84,7 +84,6 @@ function checkStatusipe() {
       trackingId: formData.trackingId,
       userId,
     };
-    console.log("Payload sent,", payload);
     try {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.checkStatusipe}`,
@@ -96,8 +95,6 @@ function checkStatusipe() {
       setIsSuccessModalVisible(true);
       toast.success("IPE Clearance verified successfully!");
     } catch (error) {
-      console.error("Verification error:", error);
-
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);
@@ -127,7 +124,6 @@ function checkStatusipe() {
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
           { withCredentials: true }
         );
-        console.log("Fetched pricing data:", response.data);
         // Find IPE pricing
         const ipePricingData = Array.isArray(response.data)
           ? response.data.find((item) => item.key === "ipe")
@@ -140,7 +136,6 @@ function checkStatusipe() {
           setAmount(ipePricing.prices.agent);
         }
       } catch (error) {
-        console.error("Error fetching IPE price:", error);
         toast.error("Failed to fetch current price");
       }
     };

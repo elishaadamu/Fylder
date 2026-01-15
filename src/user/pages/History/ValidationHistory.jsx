@@ -70,14 +70,13 @@ export default function ValidationHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log(response.data);
+
       let validationData = response.data?.ninValidation;
       if (validationData && !Array.isArray(validationData)) {
         validationData = [validationData];
       }
       setApiData(Array.isArray(validationData) ? validationData : []);
     } catch (error) {
-      console.error("Error fetching Enrollment history:", error);
     } finally {
       setLoading(false);
     }

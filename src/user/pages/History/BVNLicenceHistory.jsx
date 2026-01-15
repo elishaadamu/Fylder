@@ -67,7 +67,7 @@ export default function BVNLicenceHistory() {
           "Content-Type": "application/json",
         },
       });
-      console.log("BVN Licence History Response:", response.data);
+
       let licenseData = response.data?.license;
       if (licenseData && !Array.isArray(licenseData)) {
         // If it's a single object, wrap it in an array
@@ -76,7 +76,6 @@ export default function BVNLicenceHistory() {
       // Ensure we always set an array
       setApiData(Array.isArray(licenseData) ? licenseData : []);
     } catch (error) {
-      console.error("Error fetching BVN Licence history:", error);
     } finally {
       setLoading(false);
     }

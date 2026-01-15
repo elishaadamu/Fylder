@@ -24,7 +24,7 @@ function BasicBVN() {
 
   // Remove apiData prop and use slipData from context
   const user = slipData || {};
-  console.log("User Data:", user);
+
   const handlePrint = () => {
     toast.info("Printing BVN Slip...", { autoClose: 2000 });
     const prevTitle = document.title;

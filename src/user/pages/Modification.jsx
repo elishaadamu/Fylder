@@ -92,9 +92,7 @@ function Modification() {
       const userObj = decryptData(userStr);
       userId = userObj?._id || userObj?.id;
     }
-  } catch (error) {
-    console.error("Error getting userId:", error);
-  }
+  } catch (error) {}
   const onFinish = async (values) => {
     setLoading(true);
     try {
@@ -139,12 +137,10 @@ function Modification() {
         ...modificationSpecificPayload[values.modificationType],
       };
 
-      console.log("Payload to be sent:", payload);
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.Modification}`,
         payload
       );
-      console.log("Response status:", response.data);
 
       await Swal.fire({
         icon: "success",
@@ -157,7 +153,6 @@ function Modification() {
       setPassportPreview(null);
       setSelectedModification(null);
     } catch (error) {
-      console.error("Modification error:", error);
       Swal.fire({
         icon: "error",
         title: "Submission Failed",
@@ -213,7 +208,6 @@ function Modification() {
         form.setFieldsValue({ passport: dataUrl });
         form.validateFields(["passport"]);
       } catch (error) {
-        console.error("Error handling passport upload:", error);
         message.error("Failed to upload passport");
       }
     }

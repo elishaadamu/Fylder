@@ -55,7 +55,6 @@ export default function VerificationsHistoryTable() {
       });
       setApiData(response.data?.transactions || []);
     } catch (err) {
-      console.error(err);
     } finally {
       setLoading(false);
     }

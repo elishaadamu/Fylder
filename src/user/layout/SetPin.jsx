@@ -18,7 +18,6 @@ function decryptData(encryptedData) {
     const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     return decryptedData;
   } catch (error) {
-    console.error("Decryption error:", error);
     return null;
   }
 }
@@ -43,7 +42,6 @@ function SetPin() {
 
       const decryptedUser = decryptData(encryptedUser);
       const userId = decryptedUser?.id;
-      console.log("Decrypted User ID:", userId);
       if (values.pin !== values.confirmPin) {
         toast.error("PINs do not match!");
         return;
@@ -52,7 +50,6 @@ function SetPin() {
       const pinLoad = {
         newPin: values.pin,
       };
-      console.log("PIN Payload:", pinLoad);
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.setPin}${userId}`,
         pinLoad,
@@ -84,7 +81,6 @@ function SetPin() {
         });
       }
     } catch (error) {
-      console.error("API Error:", error);
       toast.error(
         error.response?.data?.message || "Failed to set PIN. Please try again."
       );

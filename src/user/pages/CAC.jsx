@@ -123,7 +123,6 @@ function CAC() {
       .then((res) => res.json())
       .then((data) => setStateOptions(data))
       .catch((error) => {
-        console.error("Error fetching states:", error);
         setStateOptions([]);
       });
   }, []);
@@ -143,7 +142,6 @@ function CAC() {
         form.setFieldValue("lgaOfOrigin", ""); // Reset LGA when state changes
       }
     } catch (error) {
-      console.error("Error fetching LGAs:", error);
       setLgaOptions([]);
     }
   };
@@ -190,17 +188,10 @@ function CAC() {
         return merged;
       });
 
-      // Log the accumulated data
-      console.log("Accumulated form data:", {
-        ...formData,
-        ...currentValues,
-      });
-
       const next = currentStep + 1;
       setCurrentStep(next);
       saveToLocal({ currentStep: next });
     } catch (error) {
-      console.error("Form validation error:", error);
       message.error("Please fill in all required fields");
     }
   };
@@ -299,11 +290,7 @@ function CAC() {
       payload.append("signature", fileList.signature);
       payload.append("ninUpload", fileList.ninUpload);
 
-      console.log("Payload:", payload);
-
       // Validate required dates before submission
-
-      console.log("Submitting payload:", payload);
 
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.cacRegistration}`,
@@ -315,7 +302,6 @@ function CAC() {
           withCredentials: true,
         }
       );
-      console.log("Response:", response.data);
 
       await Swal.fire({
         icon: "success",
@@ -351,7 +337,6 @@ function CAC() {
       // clear saved state
       localStorage.removeItem(STORAGE_KEY);
     } catch (error) {
-      console.error("Form submission error:", error);
       await Swal.fire({
         icon: "error",
         title: "Registration Failed",
@@ -434,15 +419,7 @@ function CAC() {
             [type]: preview,
           },
         });
-
-        // Debug log the base64 string
-        const base64String = (dataUrl || "").split(",")[1] || "";
-        console.log(
-          `${type} base64 preview:`,
-          base64String.substring(0, 50) + "..."
-        );
       } catch (error) {
-        console.error(`Error handling ${type} upload:`, error);
         message.error(`Failed to upload ${type}`);
       }
     }
@@ -500,9 +477,7 @@ function CAC() {
         ...override,
       };
       localStorage.setItem(STORAGE_KEY, JSON.stringify(payload));
-    } catch (e) {
-      console.error("Error saving CAC form to localStorage", e);
-    }
+    } catch (e) {}
   };
 
   // Load saved state on mount (if not expired)
@@ -550,9 +525,7 @@ function CAC() {
       if (saved.formData) setFormData(saved.formData);
       if (typeof saved.currentStep === "number")
         setCurrentStep(saved.currentStep);
-    } catch (e) {
-      console.error("Error restoring CAC form from localStorage", e);
-    }
+    } catch (e) {}
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 

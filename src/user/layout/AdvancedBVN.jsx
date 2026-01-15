@@ -25,7 +25,6 @@ function AdvancedBVNSlip() {
   }, []);
 
   const user = slipData || {};
-  console.log("Slip Data:", slipData);
 
   // Use base64 image if available, else fallback
   const avatarSrc = user.base64Image

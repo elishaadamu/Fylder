@@ -64,7 +64,6 @@ export default function VerificationsHistoryTable() {
 
       setApiData(response.data.transactions || []);
     } catch (error) {
-      console.error("Error fetching verification history:", error);
     } finally {
       setLoading(false);
     }

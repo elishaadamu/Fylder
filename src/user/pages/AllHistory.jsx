@@ -67,11 +67,9 @@ export default function VerificationsHistoryTable() {
           "Content-Type": "application/json",
         },
       });
-      console.log("API Response:", response.data);
 
       setApiData(response.data?.findData || []);
     } catch (error) {
-      console.error("Error fetching verification history:", error);
     } finally {
       setLoading(false);
     }
@@ -153,7 +151,6 @@ export default function VerificationsHistoryTable() {
   const handleViewSlip = (transaction) => {
     const slipType = transaction.slipLayout;
     const dataFor = transaction.dataFor;
-    console.log("Transaction Data:", transaction);
 
     // Handle NIN-Slip
     if (dataFor === "NIN-Slip") {
@@ -217,7 +214,6 @@ export default function VerificationsHistoryTable() {
       toast.success("IPE Clearance verified successfully!");
       fetchVerificationHistory();
     } catch (error) {
-      console.error("Verification error:", error);
       toast.error(error.response?.data?.message || "Verification failed");
     } finally {
       setLoading(false);

@@ -86,9 +86,6 @@ const ResetPassword = () => {
         }
       );
 
-      // Just log the response
-      console.log("Backend response:", response.data);
-
       toast.success("Password reset successful! Please login.");
       setTimeout(() => {
         navigate("/login");

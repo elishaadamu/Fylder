@@ -43,8 +43,7 @@ const response = await fetch('https://api.yourwebsite.com/api/v1/verify/nin', {
   })
 });
 
-const data = await response.json();
-console.log(data);`,
+const data = await response.json();`,
       "bvn-verification": `// BVN Verification Example
 const response = await fetch('https://api.yourwebsite.com/api/v1/verify/bvn', {
   method: 'POST',
@@ -401,15 +400,12 @@ $response = curl_exec($ch);
         { userId },
         { withCredentials: true }
       );
-      console.log("Get response:", response.data.token);
-      console.log("Get userId:", userId);
 
       if (response.data) {
         setApiToken(response.data.token);
         setIsModalVisible(true);
       }
     } catch (error) {
-      console.error("Error generating API key:", error);
       toast.error(
         error.response?.data?.message || "Failed to generate API key"
       );

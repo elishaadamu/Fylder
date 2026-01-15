@@ -50,7 +50,6 @@ function ResetPin() {
         { withCredentials: true }
       );
 
-      console.log("Response Data:", response);
       if (response.status === 200) {
         toast.success("Transaction PIN reset successfully!");
         form.resetFields();
@@ -58,7 +57,6 @@ function ResetPin() {
         toast.error(response.data.message || "Failed to reset PIN");
       }
     } catch (error) {
-      console.error("Error resetting PIN:", error);
       toast.error(error.response?.data?.message || "Failed to reset PIN");
     } finally {
       setLoading(false);

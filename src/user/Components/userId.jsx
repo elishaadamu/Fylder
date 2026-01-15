@@ -18,6 +18,4 @@ try {
     const userObj = decryptData(userStr);
     userId = userObj?._id || userObj?.id;
   }
-} catch (error) {
-  console.error("Error getting userId:", error);
-}
+} catch (error) {}

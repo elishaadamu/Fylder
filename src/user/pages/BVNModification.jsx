@@ -83,7 +83,6 @@ function BVNModification() {
         };
       }
 
-      console.log("Submitting Payload:", payload);
       await axios.post(
         `${config.apiBaseUrl}${config.endpoints.BVNModification}`,
         payload,
@@ -102,7 +101,6 @@ function BVNModification() {
       form.resetFields();
       setModificationType(null);
     } catch (error) {
-      console.error("Submission error:", error);
       Swal.fire({
         icon: "error",
         title: "Submission Failed",
@@ -126,9 +124,7 @@ function BVNModification() {
         let response = await fetch("https://nga-states-lga.onrender.com/fetch");
         let json = await response.json();
         setStates(json);
-      } catch (error) {
-        console.error("Failed to fetch states:", error);
-      }
+      } catch (error) {}
     };
     getStatesFromApi();
     setBanks(banksData);
