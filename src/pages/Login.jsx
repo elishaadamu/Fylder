@@ -72,6 +72,7 @@ const Login = () => {
         },
         { withCredentials: true }
       );
+      console.log(res.data);
 
       localStorage.setItem("user", encryptData(res.data));
       localStorage.setItem("showWelcomeModal", "true");

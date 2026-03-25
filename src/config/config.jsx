@@ -43,5 +43,11 @@ export const config = {
     updatePlan: "/data-plan/",
     VTUTransactionHistory: "/vtu/transactions/",
     BasicNINVerification: "/verify/preambly/nin",
+    ApiUserDashboardInfo: "/apiuser/dashboard/basic-info",
+    ApiUserDashboardWallet: "/apiuser/dashboard/wallet",
+    ApiUserDashboardTransactions: "/apiuser/dashboard/transactions",
+    ApiUserSalesVolume: "/apiuser/dashboard/sales-volume",
+    ApiUserTargets: "/apiuser/dashboard/api-targets",
+    ApiUserPerformance: "/apiuser/dashboard/performance",
   },
 };

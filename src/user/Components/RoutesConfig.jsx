@@ -39,9 +39,11 @@ import CACHistory from "../pages/History/CACHistory";
 import APIUsage from "../pages/History/API-Usage";
 import ValidationHistory from "../pages/History/ValidationHistory";
 import PersonalisationHistory from "../pages/History/PersonalisationHistory";
-import DemoHistory from "../pages/History/DemoHistory";
+import DemographicHistory from "../pages/History/DemoHistory";
 import BVNModification from "../pages/BVNModification";
 import BVNModificationHistory from "../pages/History/BVNModificationHistory";
+import NINModificationHistory from "../pages/History/NINModificationHistory";
+import BVNLicenceHistory from "../pages/History/BVNLicenceHistory";
 
 function RoutesConfig() {
   return (
@@ -92,7 +94,15 @@ function RoutesConfig() {
           path="/personalisation-history"
           element={<PersonalisationHistory />}
         />
-        <Route path="/demographic-history" element={<DemoHistory />} />
+        <Route path="/demographic-history" element={<DemographicHistory />} />
+        <Route
+          path="/nin-modification-history"
+          element={<NINModificationHistory />}
+        />
+        <Route
+          path="/bvn-licence-history"
+          element={<BVNLicenceHistory />}
+        />
         {/* Catch-all route for 404 Not Found */}
         <Route path="*" element={<NotFound />} />
       </Routes>

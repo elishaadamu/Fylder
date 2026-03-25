@@ -26,7 +26,7 @@ function decryptData(ciphertext) {
   }
 }
 
-export default function ValidationHistory() {
+export default function BVNModificationHistory() {
   const encryptedUser = localStorage.getItem("user");
   const user = decryptData(encryptedUser);
   const userId = user?._id || user?.id;
@@ -205,8 +205,8 @@ export default function ValidationHistory() {
         </div>
         <div className="space-y-2">
           <div>
-            <span className="font-medium text-gray-500">NIN:</span>
-            <p className="text-gray-900 font-mono">{transaction.nin}</p>
+            <span className="font-medium text-gray-500">BVN:</span>
+            <p className="text-gray-900 font-mono">{transaction.bvn || transaction.nin}</p>
           </div>
           <div>
             <span className="font-medium text-gray-500">Status:</span>
@@ -285,57 +285,73 @@ export default function ValidationHistory() {
                 <table className="w-full table-auto divide-y divide-gray-200 min-w-[800px]">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-16">
+                        S/n
+                      </th>
                       <TableHeader
-                        label="Date"
-                        sortKey="createdAt"
+                        label="ID"
+                        sortKey="bvn"
                         className="px-4 py-3 text-left"
                       />
-                      <TableHeader
-                        label="Change Type"
-                        sortKey="changeType"
-                        className="px-4 py-3 text-left"
-                      />
-
-                      <TableHeader
-                        label="NIN"
-                        sortKey="nin"
-                        className="px-4 py-3 text-left"
-                      />
-
                       <TableHeader
                         label="Status"
                         sortKey="status"
                         className="px-4 py-3 text-left"
                       />
+                      <TableHeader
+                        label="Message"
+                        sortKey="replyNote"
+                        className="px-4 py-3 text-left"
+                      />
+                      <TableHeader
+                        label="Date submitted"
+                        sortKey="createdAt"
+                        className="px-4 py-3 text-left"
+                      />
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                        Actions
+                      </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedData.map((transaction) => (
+                    {paginatedData.map((transaction, index) => (
                       <tr
                         key={transaction._id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {format(
-                            new Date(transaction.createdAt),
-                            "dd/MM/yyyy HH:mm"
-                          )}
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                          {(currentPage - 1) * pageSize + index + 1}
                         </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.changeType}
-                        </td>
-
-                        <td className="px-4 py-3 whitespace-nowrap text-sm font-mono">
-                          {transaction.nin}
+                        <td className="px-4 py-3 whitespace-nowrap text-sm font-mono text-gray-900">
+                          {transaction.bvn || transaction.nin}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span
-                            className={`px-2 py-1 inline-flex text-xs leading-5 rounded-full ${getStatusClass(
+                            className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
                               transaction.status
                             )}`}
                           >
                             {transaction.status}
                           </span>
+                        </td>
+                        <td className="px-4 py-3 text-sm text-gray-600 max-w-[200px]">
+                          <div className="line-clamp-2">
+                            {transaction.replyNote || "N/A"}
+                          </div>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                          {format(
+                            new Date(transaction.createdAt),
+                            "dd/MM/yyyy HH:mm"
+                          )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <button
+                            onClick={() => showModal(transaction)}
+                            className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50"
+                          >
+                            <EyeOutlined className="text-lg" />
+                          </button>
                         </td>
                       </tr>
                     ))}

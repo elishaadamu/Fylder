@@ -92,7 +92,7 @@ function IPEClearance() {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.ipeSubmit}`,
         payload,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       setVerificationResult(response.data?.data);
@@ -100,6 +100,7 @@ function IPEClearance() {
       toast.success("IPE Clearance verified successfully!");
     } catch (error) {
       toast.error(error.response?.data?.error || "Verification failed");
+      console.error(error);
     } finally {
       setLoading(false);
     }
@@ -139,7 +140,7 @@ function IPEClearance() {
       await axios.post(
         `${config.apiBaseUrl}${config.endpoints.freeStatusipe}`,
         payload,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       // Show alert message
@@ -172,7 +173,7 @@ function IPEClearance() {
       try {
         const response = await axios.get(
           `${config.apiBaseUrl}${config.endpoints.currentapipricing}`,
-          { withCredentials: true }
+          { withCredentials: true },
         );
         // Find IPE pricing
         const ipePricingData = Array.isArray(response.data)

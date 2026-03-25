@@ -300,24 +300,12 @@ export default function ValidationHistory() {
                 <table className="w-full table-auto divide-y divide-gray-200 min-w-[800px]">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-16">
+                        S/n
+                      </th>
                       <TableHeader
-                        label="Date"
-                        sortKey="createdAt"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="Validation Type"
-                        sortKey="validationType"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="NIN"
+                        label="ID"
                         sortKey="nin"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="Amount"
-                        sortKey="amount"
                         className="px-4 py-3 text-left"
                       />
                       <TableHeader
@@ -326,7 +314,12 @@ export default function ValidationHistory() {
                         className="px-4 py-3 text-left"
                       />
                       <TableHeader
-                        label="Reply Note"
+                        label="Date submitted"
+                        sortKey="createdAt"
+                        className="px-4 py-3 text-left"
+                      />
+                      <TableHeader
+                        label="Message"
                         sortKey="replyNote"
                         className="px-4 py-3 text-left"
                       />
@@ -336,25 +329,16 @@ export default function ValidationHistory() {
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedData.map((transaction) => (
+                    {paginatedData.map((transaction, index) => (
                       <tr
                         key={transaction._id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {format(
-                            new Date(transaction.createdAt),
-                            "dd/MM/yyyy HH:mm"
-                          )}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.validationType}
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                          {(currentPage - 1) * pageSize + index + 1}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap text-sm font-mono">
                           {transaction.nin}
-                        </td>
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {transaction.amount}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span
@@ -365,9 +349,15 @@ export default function ValidationHistory() {
                             {transaction.status}
                           </span>
                         </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                          {format(
+                            new Date(transaction.createdAt),
+                            "dd/MM/yyyy HH:mm"
+                          )}
+                        </td>
                         <td className="px-4 py-3 text-sm max-w-[200px]">
-                          <div className="line-clamp-2">
-                            {transaction.replyNote}
+                          <div className="line-clamp-2 text-gray-600">
+                            {transaction.replyNote || "N/A"}
                           </div>
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">

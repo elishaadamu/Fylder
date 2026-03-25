@@ -202,6 +202,13 @@ export default function BVNLicenceHistory() {
         />
       </div>
 
+      {/* Results Count */}
+      {!loading && sortedTransactions.length > 0 && (
+        <div className="mb-4 text-sm text-gray-600">
+          Showing {paginatedData.length} of {sortedTransactions.length} records
+        </div>
+      )}
+
       {loading && (
         <div className="flex justify-center items-center h-64">
           <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-500"></div>
@@ -209,70 +216,136 @@ export default function BVNLicenceHistory() {
       )}
 
       {!loading && sortedTransactions.length > 0 ? (
-        <div className="relative overflow-hidden rounded-lg border border-gray-200 shadow">
-          <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
-            <table className="w-full table-auto divide-y divide-gray-200">
-              <thead className="bg-gray-50">
-                <tr>
-                  <TableHeader
-                    label="Date"
-                    sortKey="createdAt"
-                    className="w-1/6 px-4 py-2 text-left"
-                  />
-                  <TableHeader
-                    label="Licence Type"
-                    sortKey="licenseType"
-                    className="w-1/3 px-4 py-2 text-left"
-                  />
-                  <TableHeader
-                    label="Name"
-                    sortKey="lastName"
-                    className="w-1/4 px-4 py-2 text-left"
-                  />
-                  <TableHeader
-                    label="BVN"
-                    sortKey="bvn"
-                    className="w-1/4 px-4 py-2 text-left"
-                  />
-
-                  <th scope="col" className="w-1/6 px-4 py-2 text-left">
-                    Actions
-                  </th>
-                </tr>
-              </thead>
-              <tbody className="bg-white divide-y divide-gray-200">
-                {paginatedData.map((transaction) => (
-                  <tr key={transaction._id} className="hover:bg-gray-50">
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {format(
-                        new Date(transaction.createdAt),
-                        "dd/MM/yyyy HH:mm"
-                      )}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {transaction.licenseType}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {`${transaction.firstName} ${transaction.lastName}`}
-                    </td>
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      {transaction.bvn}
-                    </td>
-
-                    <td className="px-4 py-2 whitespace-nowrap">
-                      <button
-                        onClick={() => showModal(transaction)}
-                        className="text-blue-600 hover:text-blue-800 transition-colors"
-                      >
-                        <EyeOutlined className="text-lg" />
-                      </button>
-                    </td>
+        <>
+          <div className="relative overflow-hidden rounded-lg border border-gray-200 shadow">
+            <div className="overflow-x-auto scrollbar-thin scrollbar-thumb-gray-300 scrollbar-track-gray-100">
+              <table className="w-full table-auto divide-y divide-gray-200 min-w-[800px]">
+                <thead className="bg-gray-50">
+                  <tr>
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-16">
+                      S/n
+                    </th>
+                    <TableHeader
+                      label="Full name"
+                      sortKey="firstName"
+                      className="px-4 py-3 text-left"
+                    />
+                    <TableHeader
+                      label="Status"
+                      sortKey="status"
+                      className="px-4 py-3 text-left"
+                    />
+                    <TableHeader
+                      label="Email address"
+                      sortKey="email"
+                      className="px-4 py-3 text-left"
+                    />
+                    <TableHeader
+                      label="Date submitted"
+                      sortKey="createdAt"
+                      className="px-4 py-3 text-left"
+                    />
+                    <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                      Actions
+                    </th>
                   </tr>
-                ))}
-              </tbody>
-            </table>
+                </thead>
+                <tbody className="bg-white divide-y divide-gray-200">
+                  {paginatedData.map((transaction, index) => (
+                    <tr
+                      key={transaction._id}
+                      className="hover:bg-gray-50 transition-colors"
+                    >
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                        {(currentPage - 1) * pageSize + index + 1}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm font-medium text-gray-900">
+                        {`${transaction.firstName} ${transaction.lastName}`}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <span
+                          className={`px-2 py-1 inline-flex text-xs leading-5 font-semibold rounded-full ${
+                            transaction.status?.toLowerCase() === "successfully"
+                              ? "bg-green-100 text-green-800"
+                              : transaction.status?.toLowerCase() === "pending"
+                              ? "bg-blue-100 text-blue-800"
+                              : "bg-red-100 text-red-800"
+                          }`}
+                        >
+                          {transaction.status}
+                        </span>
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                        {transaction.email}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                        {format(
+                          new Date(transaction.createdAt),
+                          "dd/MM/yyyy HH:mm"
+                        )}
+                      </td>
+                      <td className="px-4 py-3 whitespace-nowrap">
+                        <button
+                          onClick={() => showModal(transaction)}
+                          className="text-blue-600 hover:text-blue-800 transition-colors p-1 rounded hover:bg-blue-50"
+                        >
+                          <EyeOutlined className="text-lg" />
+                        </button>
+                      </td>
+                    </tr>
+                  ))}
+                </tbody>
+              </table>
+            </div>
           </div>
-        </div>
+
+          {/* Pagination */}
+          {totalPages > 1 && (
+            <div className="flex flex-col sm:flex-row items-center justify-between mt-6 gap-4">
+              <div className="flex items-center gap-2 text-sm">
+                <span>Show:</span>
+                <select
+                  value={pageSize}
+                  onChange={(e) => {
+                    setPageSize(Number(e.target.value));
+                    setCurrentPage(1);
+                  }}
+                  className="border rounded px-2 py-1 text-sm"
+                >
+                  <option value={5}>5</option>
+                  <option value={10}>10</option>
+                  <option value={20}>20</option>
+                  <option value={50}>50</option>
+                </select>
+                <span>entries</span>
+              </div>
+
+              <div className="flex items-center gap-2">
+                <button
+                  onClick={() => setCurrentPage(Math.max(1, currentPage - 1))}
+                  disabled={currentPage === 1}
+                  className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Previous
+                </button>
+
+                <span className="text-sm px-3">
+                  Page {currentPage} of {totalPages}
+                </span>
+
+                <button
+                  onClick={() =>
+                    setCurrentPage(Math.min(totalPages, currentPage + 1))
+                  }
+                  disabled={currentPage === totalPages}
+                  className="px-3 py-1 border rounded text-sm disabled:opacity-50 disabled:cursor-not-allowed hover:bg-gray-50"
+                >
+                  Next
+                </button>
+              </div>
+            </div>
+          )}
+        </>
       ) : !loading ? (
         <div className="flex flex-col items-center justify-center p-8">
           <Empty

@@ -272,6 +272,7 @@ function NIN() {
       }
     } catch (error) {
       toast.error(error.response?.data?.message || "Verification failed");
+      console.log(error.response)
     } finally {
       setLoading(false);
     }

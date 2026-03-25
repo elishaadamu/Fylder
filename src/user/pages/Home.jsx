@@ -20,6 +20,7 @@ import { toast, ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 import { config } from "../../config/config.jsx";
 import CryptoJS from "crypto-js";
+import ApiUserHome from "./ApiUserHome.jsx";
 
 const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY;
 
@@ -440,8 +441,12 @@ function Dashboard() {
     fetchVerificationCount();
   }, [userId]);
 
+  if (user?.isApiUser) {
+    return <ApiUserHome user={user} userId={userId} />;
+  }
+
   return (
-    <div className="max-w-[1500px] mx-auto">
+    <div className="max-w-[1500px] mx-auto overflow-x-hidden md:overflow-x-visible">
       <div className="-mt-5 md:mt-0 mb-5 md:mb-10 text-2xl text-gray-500 font-bold">
         {isReturning
           ? `Welcome back, ${firstName} 🙂`

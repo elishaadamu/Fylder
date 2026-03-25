@@ -26,7 +26,7 @@ function decryptData(ciphertext) {
   }
 }
 
-export default function PersonalisationHistory() {
+export default function DemographicHistory() {
   const encryptedUser = localStorage.getItem("user");
   const user = decryptData(encryptedUser);
   const userId = user?._id || user?.id;
@@ -117,10 +117,13 @@ export default function PersonalisationHistory() {
         return sortConfig.direction === "asc" ? dateA - dateB : dateB - dateA;
       }
 
-      if (a[sortConfig.key] < b[sortConfig.key]) {
+      const valA = a[sortConfig.key] || "";
+      const valB = b[sortConfig.key] || "";
+
+      if (valA < valB) {
         return sortConfig.direction === "asc" ? -1 : 1;
       }
-      if (a[sortConfig.key] > b[sortConfig.key]) {
+      if (valA > valB) {
         return sortConfig.direction === "asc" ? 1 : -1;
       }
       return 0;
@@ -155,13 +158,13 @@ export default function PersonalisationHistory() {
 
   const getStatusClass = (status) => {
     const lowerStatus = status?.toLowerCase();
-    if (lowerStatus === "successfully") {
+    if (lowerStatus === "successfully" || lowerStatus === "success") {
       return "bg-green-100 text-green-800";
     }
     if (lowerStatus === "pending") {
       return "bg-blue-100 text-blue-800";
     }
-    if (lowerStatus === "rejected") {
+    if (lowerStatus === "rejected" || lowerStatus === "failed") {
       return "bg-red-100 text-red-800";
     }
     return "bg-gray-100 text-gray-800";
@@ -170,6 +173,15 @@ export default function PersonalisationHistory() {
   const showModal = (transaction) => {
     setSelectedTransaction(transaction);
     setIsModalVisible(true);
+  };
+
+  const handleDownloadSlip = (url, filename) => {
+    const link = document.createElement("a");
+    link.href = url;
+    link.download = `slip-${filename}`;
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
   };
 
   React.useEffect(() => {
@@ -197,15 +209,9 @@ export default function PersonalisationHistory() {
             </p>
           </div>
           <div>
-            <span className="font-medium text-gray-500">First Name:</span>
+            <span className="font-medium text-gray-500">Full Name:</span>
             <p className="text-gray-900 text-xs">
-              {transaction.firstName || "N/A"}
-            </p>
-          </div>
-          <div>
-            <span className="font-medium text-gray-500">Last Name:</span>
-            <p className="text-gray-900 text-xs">
-              {transaction.lastName || "N/A"}
+              {`${transaction.firstName || ""} ${transaction.lastName || ""}`}
             </p>
           </div>
         </div>
@@ -221,9 +227,9 @@ export default function PersonalisationHistory() {
             </span>
           </div>
           <div>
-            <span className="font-medium text-gray-500">Phone:</span>
+            <span className="font-medium text-gray-500">D.o.b:</span>
             <p className="text-gray-900 text-xs">
-              {transaction.phone || "N/A"}
+              {transaction.dob || "N/A"}
             </p>
           </div>
         </div>
@@ -241,7 +247,7 @@ export default function PersonalisationHistory() {
   return (
     <div className="p-4 w-full">
       <h2 className="text-[clamp(1.2rem,2vw,2rem)] font-bold mb-4">
-        Personalisation History
+        Demographic Search History
       </h2>
 
       {/* Filters Section */}
@@ -302,24 +308,17 @@ export default function PersonalisationHistory() {
                 <table className="w-full table-auto divide-y divide-gray-200 min-w-[600px]">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-16">
+                        S/n
+                      </th>
                       <TableHeader
-                        label="Date"
-                        sortKey="createdAt"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="First Name"
+                        label="FULL NAME"
                         sortKey="firstName"
                         className="px-4 py-3 text-left"
                       />
                       <TableHeader
-                        label="Last Name"
-                        sortKey="lastName"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="Phone"
-                        sortKey="phone"
+                        label="D.o.b"
+                        sortKey="dob"
                         className="px-4 py-3 text-left"
                       />
                       <TableHeader
@@ -328,30 +327,27 @@ export default function PersonalisationHistory() {
                         className="px-4 py-3 text-left"
                       />
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                        Download slip
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
                         Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedData.map((transaction) => (
+                    {paginatedData.map((transaction, index) => (
                       <tr
                         key={transaction._id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {format(
-                            new Date(transaction.createdAt),
-                            "dd/MM/yyyy HH:mm"
-                          )}
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                          {(currentPage - 1) * pageSize + index + 1}
                         </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.firstName || "N/A"}
+                        <td className="px-4 py-3 text-sm text-gray-900 font-medium">
+                          {`${transaction.firstName || ""} ${transaction.lastName || ""}`}
                         </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.lastName || "N/A"}
-                        </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.phone || "N/A"}
+                        <td className="px-4 py-3 text-sm text-gray-600">
+                          {transaction.dob || "N/A"}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span
@@ -362,6 +358,19 @@ export default function PersonalisationHistory() {
                             {transaction.status}
                           </span>
                         </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm">
+                          {transaction.slip ? (
+                            <button
+                              onClick={() => handleDownloadSlip(transaction.slip, transaction._id)}
+                              className="text-blue-600 hover:text-blue-800 font-medium flex items-center gap-1"
+                            >
+                              <ArrowDownIcon className="w-4 h-4" />
+                              Download
+                            </button>
+                          ) : (
+                            <span className="text-gray-400">No slip</span>
+                          )}
+                        </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           <button
                             onClick={() => showModal(transaction)}
@@ -369,9 +378,6 @@ export default function PersonalisationHistory() {
                             title="View Details"
                           >
                             <EyeOutlined className="text-lg" />
-                            <span className="text-sm hidden sm:inline">
-                              View
-                            </span>
                           </button>
                         </td>
                       </tr>

@@ -84,7 +84,7 @@ export default function VerificationsHistoryTable() {
   // Get unique verification types from the data
   const verificationTypes = React.useMemo(() => {
     const types = [...new Set(apiData.map((item) => item.dataFor))].filter(
-      Boolean
+      Boolean,
     );
     return types.sort();
   }, [apiData]);
@@ -208,7 +208,7 @@ export default function VerificationsHistoryTable() {
       const response = await axios.post(
         `${config.apiBaseUrl}${config.endpoints.checkStatusipe}`,
         payload,
-        { withCredentials: true }
+        { withCredentials: true },
       );
 
       toast.success("IPE Clearance verified successfully!");
@@ -229,7 +229,7 @@ export default function VerificationsHistoryTable() {
   // Pagination logic
   const paginatedData = sortedTransactions.slice(
     (currentPage - 1) * pageSize,
-    currentPage * pageSize
+    currentPage * pageSize,
   );
 
   const totalPages = Math.ceil(sortedTransactions.length / pageSize);
@@ -319,7 +319,7 @@ export default function VerificationsHistoryTable() {
                       <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
                         {format(
                           new Date(transaction.createdAt),
-                          "dd/MM/yyyy HH:mm"
+                          "dd/MM/yyyy HH:mm",
                         )}
                       </td>
                       <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
@@ -384,7 +384,7 @@ export default function VerificationsHistoryTable() {
                     .filter((t) =>
                       verificationType === "all"
                         ? t.dataFor === "BVN-Slip"
-                        : true
+                        : true,
                     )
                     .map((transaction, index) => (
                       <tr
@@ -394,7 +394,7 @@ export default function VerificationsHistoryTable() {
                         <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
                           {format(
                             new Date(transaction.createdAt),
-                            "dd/MM/yyyy HH:mm"
+                            "dd/MM/yyyy HH:mm",
                           )}
                         </td>
                         <td className="w-[clamp(120px,20vw,160px)] py-2 whitespace-nowrap">
@@ -464,7 +464,7 @@ export default function VerificationsHistoryTable() {
                       <td className="w-[clamp(80px,15vw,112px)] px-2 py-2 whitespace-nowrap text-[clamp(0.8rem,1vw,0.75rem)] text-gray-900">
                         {format(
                           new Date(transaction.createdAt),
-                          "dd/MM/yyyy HH:mm:ss"
+                          "dd/MM/yyyy HH:mm:ss",
                         )}
                       </td>
                       <td className="w-[clamp(120px,20vw,160px)] px-2 py-2 whitespace-nowrap">
@@ -478,10 +478,11 @@ export default function VerificationsHistoryTable() {
                             transaction?.status?.toLowerCase() === "pending"
                               ? "bg-yellow-100 text-yellow-800"
                               : transaction?.status?.toLowerCase() === "success"
-                              ? "bg-green-100 text-green-800"
-                              : transaction?.status?.toLowerCase() === "failed"
-                              ? "bg-red-100 text-red-800"
-                              : "bg-gray-100 text-gray-800"
+                                ? "bg-green-100 text-green-800"
+                                : transaction?.status?.toLowerCase() ===
+                                    "failed"
+                                  ? "bg-red-100 text-red-800"
+                                  : "bg-gray-100 text-gray-800"
                           }`}
                         >
                           {transaction?.status || "N/A"}
@@ -677,7 +678,7 @@ export default function VerificationsHistoryTable() {
                   <p className="mt-1 text-sm text-gray-900">
                     {format(
                       new Date(selectedTransaction.createdAt),
-                      "dd/MM/yyyy HH:mm:ss"
+                      "dd/MM/yyyy HH:mm:ss",
                     )}
                   </p>
                 </div>
@@ -746,7 +747,7 @@ export default function VerificationsHistoryTable() {
                   <p className="mt-1 text-sm text-gray-900">
                     {format(
                       new Date(selectedTransaction.createdAt),
-                      "dd/MM/yyyy HH:mm:ss"
+                      "dd/MM/yyyy HH:mm:ss",
                     )}
                   </p>
                 </div>

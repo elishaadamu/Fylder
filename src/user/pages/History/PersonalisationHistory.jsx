@@ -306,49 +306,42 @@ export default function PersonalisationHistory() {
                 <table className="w-full table-auto divide-y divide-gray-200 min-w-[600px]">
                   <thead className="bg-gray-50">
                     <tr>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500 uppercase tracking-wider w-16">
+                        S/n
+                      </th>
                       <TableHeader
-                        label="Date"
-                        sortKey="createdAt"
-                        className="px-4 py-3 text-left"
-                      />
-                      <TableHeader
-                        label="Tracking ID"
+                        label="Tracking id"
                         sortKey="trackingId"
                         className="px-4 py-3 text-left"
                       />
-                      <TableHeader
-                        label="ReplyNote"
-                        sortKey="replyNote"
-                        className="px-4 py-3 text-left"
-                      />
-                      {/* <TableHeader
-                        label="Verified With"
-                        sortKey="verifyWith"
-                        className="px-4 py-3 text-left"
-                      /> */}
                       <TableHeader
                         label="Status"
                         sortKey="status"
                         className="px-4 py-3 text-left"
                       />
+                      <TableHeader
+                        label="Date submitted"
+                        sortKey="createdAt"
+                        className="px-4 py-3 text-left"
+                      />
                       <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
-                        Download
+                        download slip
+                      </th>
+                      <th className="px-4 py-3 text-left text-sm font-medium text-gray-500">
+                        Actions
                       </th>
                     </tr>
                   </thead>
                   <tbody className="bg-white divide-y divide-gray-200">
-                    {paginatedData.map((transaction) => (
+                    {paginatedData.map((transaction, index) => (
                       <tr
                         key={transaction._id}
                         className="hover:bg-gray-50 transition-colors"
                       >
-                        <td className="px-4 py-3 whitespace-nowrap text-sm">
-                          {format(
-                            new Date(transaction.createdAt),
-                            "dd/MM/yyyy HH:mm"
-                          )}
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-500">
+                          {(currentPage - 1) * pageSize + index + 1}
                         </td>
-                        <td className="px-4 py-3 text-sm font-mono">
+                        <td className="px-4 py-3 text-sm font-mono text-gray-900">
                           <div
                             className="max-w-[200px] truncate"
                             title={transaction.trackingId}
@@ -356,12 +349,6 @@ export default function PersonalisationHistory() {
                             {transaction.trackingId}
                           </div>
                         </td>
-                        <td className="px-4 py-3 text-sm">
-                          {transaction.replyNote || "N/A"}
-                        </td>
-                        {/* <td className="px-4 py-3 text-sm">
-                          {transaction.verifyWith || "N/A"}
-                        </td> */}
                         <td className="px-4 py-3 whitespace-nowrap">
                           <span
                             className={`px-3 py-1 uppercase inline-flex text-xs leading-5 font-semibold rounded-full ${getStatusClass(
@@ -370,6 +357,12 @@ export default function PersonalisationHistory() {
                           >
                             {transaction.status}
                           </span>
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap text-sm text-gray-600">
+                          {format(
+                            new Date(transaction.createdAt),
+                            "dd/MM/yyyy HH:mm"
+                          )}
                         </td>
                         <td className="px-4 py-3 whitespace-nowrap">
                           {transaction.slip ? (
@@ -390,6 +383,15 @@ export default function PersonalisationHistory() {
                               No slip
                             </span>
                           )}
+                        </td>
+                        <td className="px-4 py-3 whitespace-nowrap">
+                          <button
+                            onClick={() => showModal(transaction)}
+                            className="text-gray-400 hover:text-blue-600 transition-colors p-1 rounded hover:bg-blue-50"
+                            title="View Details"
+                          >
+                            <EyeOutlined className="text-lg" />
+                          </button>
                         </td>
                       </tr>
                     ))}

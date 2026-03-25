@@ -37,6 +37,20 @@ import { GrValidate } from "react-icons/gr";
 import { VscVerified } from "react-icons/vsc";
 import { Menu, Dropdown } from "antd";
 import { DownOutlined } from "@ant-design/icons";
+import CryptoJS from "crypto-js";
+
+const SECRET_KEY = import.meta.env.VITE_APP_SECRET_KEY;
+
+function decryptData(ciphertext) {
+  if (!ciphertext) return null;
+  try {
+    const bytes = CryptoJS.AES.decrypt(ciphertext, SECRET_KEY);
+    const decrypted = bytes.toString(CryptoJS.enc.Utf8);
+    return JSON.parse(decrypted);
+  } catch {
+    return null;
+  }
+}
 
 const sidebarSections = [
   {
@@ -188,6 +202,16 @@ const sidebarSections = [
             label: "Personalisation",
           },
           {
+            to: "/dashboard/nin-modification-history",
+            icon: <RiPassportFill className="w-5 h-5" />,
+            label: "NIN Modification",
+          },
+          {
+            to: "/dashboard/bvn-licence-history",
+            icon: <FaCar className="w-5 h-5" />,
+            label: "BVN Licence",
+          },
+          {
             key: "API Usage",
             to: "/dashboard/api-usage",
             icon: <FaListCheck className="w-5 h-5" />,
@@ -224,29 +248,30 @@ const sidebarSections = [
   },
 ];
 
-let user = {};
-try {
-  user = JSON.parse(localStorage.getItem("user") || "{}");
-} catch (e) {
-  user = {};
-}
-
 function Sidebar({ collapsed, setCollapsed, sidebarOpen, setSidebarOpen }) {
-  const [dropdownOpen, setDropdownOpen] = useState(false);
-  const navigate = useNavigate(); // <-- useNavigate hook
-  const sidebarRef = React.useRef(null);
-
-  const handleLogout = (e) => {
-    e.preventDefault(); // Prevent default link behavior
-    localStorage.removeItem("user");
-    navigate("/login");
-  };
+  const navigate = useNavigate();
+  
+  const user = decryptData(localStorage.getItem("user"));
 
   const handleNavLinkClick = () => {
     if (window.innerWidth < 768) {
       setSidebarOpen(false);
     }
   };
+
+  const handleLogout = (e) => {
+    e.preventDefault();
+    localStorage.removeItem("user");
+    navigate("/login");
+  };
+
+  const filteredSections = sidebarSections.filter(section => {
+    // Hide specific sections for API users if they can't process verifications
+    if (user?.isApiUser && !user?.canProcessVerification) {
+      return section.section !== "AUTOMATIC SERVICES" && section.section !== "MANUAL SERVICES";
+    }
+    return true;
+  });
 
   return (
     <>
@@ -299,7 +324,7 @@ function Sidebar({ collapsed, setCollapsed, sidebarOpen, setSidebarOpen }) {
         </div>
 
         <div className="flex-1 overflow-y-auto mt-4">
-          {sidebarSections.map((section, i) => (
+          {filteredSections.map((section, i) => (
             <div key={i} className="mb-6">
               {!collapsed && section.section && (
                 <p className="px-6 mb-2 text-xs font-semibold uppercase tracking-wider text-gray-400">
